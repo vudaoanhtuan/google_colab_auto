@@ -71,13 +71,13 @@ if __name__=='__main__':
     for _ in range(5):
         cell = driver.find_elements_by_class_name("cell")
         for c in cell:
-            if c.text.find("__#CELL#__") > 0:
+            if c.text.find("##AUTO##") > 0:
                 selected_cell = c
                 break
         if selected_cell is not None:
             break
         else:
-            print("Try to find __#KEEP#__")
+            print("Try to find ##AUTO## cell")
             time.sleep(5)
 
     if selected_cell is not None:
@@ -98,7 +98,7 @@ if __name__=='__main__':
         driver.execute_script(auto_run_js);
 
     else:
-        print("Missing __#KEEP#__ in running")
+        print("Missing ##AUTO##")
 
     print("Enter q to quit")
     start = time.time()
