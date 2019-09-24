@@ -4,8 +4,10 @@ import time
 import datetime
 import threading
 import sys
+import getpass
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from cipher import decrypt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('cookie_file')
@@ -43,6 +45,21 @@ def stop_driver(driver):
             print("Stopping")
             break
 
+def get_encrypted_cookie(cookie_file):
+    with open(cookie_file, 'rb') as f:
+        data = f.read()
+    cookie = None
+    pw = None
+    while True:
+        pw = getpass.getpass(prompt='Enter password: ')
+        try:
+            decrypted = decrypt(data, pw)
+            cookie = pickle.loads(decrypted)
+            break
+        except:
+            print("Wrong password!")
+    return cookie
+
 running = True
 if __name__=='__main__':
     args = parser.parse_args()
@@ -55,8 +72,7 @@ if __name__=='__main__':
     driver.get("https://colab.research.google.com")
 
     print("Load cookie")
-    with open(args.cookie_file, 'rb') as f:
-        cookies = pickle.load(f)
+    cookies = get_encrypted_cookie(args.cookie_file)
 
     for cookie in cookies:
         if isinstance(cookie.get('expiry'), float):
@@ -112,4 +128,5 @@ if __name__=='__main__':
         time.sleep(60)
     
     driver.close()
+    driver.quit()
     print("Notebook stopped")
